@@ -1,0 +1,170 @@
+{
+  "production_line": {
+    "id": "line_demo",
+    "name": "示例产线",
+    "description": "一个简单的示例产线配置",
+    "workstations": [
+      {
+        "id": "ws_001",
+        "name": "加工站A",
+        "type": "processing",
+        "capacity": 1,
+        "processing_time": {
+          "type": "fixed",
+          "value": 10
+        }
+      },
+      {
+        "id": "ws_002",
+        "name": "质检站",
+        "type": "inspection",
+        "capacity": 1,
+        "processing_time": {
+          "type": "uniform",
+          "min": 5,
+          "max": 8
+        }
+      },
+      {
+        "id": "ws_003",
+        "name": "包装站",
+        "type": "packaging",
+        "capacity": 1,
+        "processing_time": {
+          "type": "normal",
+          "mean": 12,
+          "std": 2
+        }
+      }
+    ],
+    "buffers": [
+      {
+        "id": "buf_001",
+        "name": "原料缓冲区",
+        "capacity": 100,
+        "location": "entry"
+      },
+      {
+        "id": "buf_002",
+        "name": "中间缓冲区",
+        "capacity": 50,
+        "location": "between_ws_001_ws_002"
+      },
+      {
+        "id": "buf_003",
+        "name": "成品缓冲区",
+        "capacity": 80,
+        "location": "exit"
+      }
+    ],
+    "transport_paths": [
+      {
+        "id": "path_001",
+        "from_location": "buf_001",
+        "to_location": "ws_001",
+        "transport_time": 2
+      },
+      {
+        "id": "path_002",
+        "from_location": "ws_001",
+        "to_location": "buf_002",
+        "transport_time": 1.5
+      },
+      {
+        "id": "path_003",
+        "from_location": "buf_002",
+        "to_location": "ws_002",
+        "transport_time": 1
+      },
+      {
+        "id": "path_004",
+        "from_location": "ws_002",
+        "to_location": "ws_003",
+        "transport_time": 2
+      },
+      {
+        "id": "path_005",
+        "from_location": "ws_003",
+        "to_location": "buf_003",
+        "transport_time": 1
+      }
+    ]
+  },
+  "routines": [
+    {
+      "id": "routine_001",
+      "name": "标准产品流程",
+      "material_type": "raw_material",
+      "start_location": "buf_001",
+      "end_location": "buf_003",
+      "description": "从原料到成品的标准流程",
+      "steps": [
+        {
+          "step_id": 1,
+          "workstation_id": "ws_001",
+          "operation": "processing",
+          "processing_time": 10,
+          "value_added": true,
+          "value_amount": 100
+        },
+        {
+          "step_id": 2,
+          "workstation_id": "ws_002",
+          "operation": "inspection",
+          "processing_time": 6,
+          "value_added": false,
+          "conditions": {
+            "type": "quality_check",
+            "pass_rate": 0.95,
+            "pass_route": "step_3",
+            "fail_route": "step_1"
+          }
+        },
+        {
+          "step_id": 3,
+          "workstation_id": "ws_003",
+          "operation": "packaging",
+          "processing_time": 12,
+          "value_added": true,
+          "value_amount": 50
+        }
+      ]
+    }
+  ],
+  "value_stream": {
+    "name": "默认价值流",
+    "value_points": [
+      {
+        "workstation_id": "ws_001",
+        "value_added": 100,
+        "description": "加工增值"
+      },
+      {
+        "workstation_id": "ws_003",
+        "value_added": 50,
+        "description": "包装增值"
+      }
+    ],
+    "cost_points": [
+      {
+        "workstation_id": "ws_001",
+        "cost_per_unit": 30,
+        "cost_type": "processing",
+        "description": "加工成本"
+      },
+      {
+        "workstation_id": "ws_002",
+        "cost_per_unit": 10,
+        "cost_type": "processing",
+        "description": "质检成本"
+      },
+      {
+        "workstation_id": "ws_003",
+        "cost_per_unit": 20,
+        "cost_type": "processing",
+        "description": "包装成本"
+      }
+    ]
+  }
+}
+
