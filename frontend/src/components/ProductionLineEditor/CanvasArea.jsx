@@ -20,7 +20,7 @@ function CanvasArea({
   const [connectFrom, setConnectFrom] = useState(null);
 
   const [{ isOver }, drop] = useDrop(() => ({
-    accept: ['WORKSTATION', 'BUFFER', 'CANVAS_ELEMENT'],
+    accept: ['WORKSTATION', 'BUFFER', 'CANVAS_ELEMENT', 'CONNECTION_HANDLE'],
     drop: (item, monitor) => {
       const offset = monitor.getClientOffset();
       if (!offset || !canvasRef.current) return;
@@ -32,6 +32,32 @@ function CanvasArea({
       };
 
       const itemType = monitor.getItemType();
+      
+      // 连接点拖拽处理
+      if (itemType === 'CONNECTION_HANDLE') {
+        // 找到目标元素（检查鼠标位置是否在某个元素上）
+        const allElements = [
+          ...workstations.map(ws => ({ ...ws, elementType: 'workstation' })),
+          ...buffers.map(buf => ({ ...buf, elementType: 'buffer' }))
+        ];
+        const targetElement = allElements.find(el => {
+          if (!el.position) return false;
+          const elWidth = el.elementType === 'workstation' ? 80 : 70;
+          const elHeight = el.elementType === 'workstation' ? 60 : 50;
+          const elX = el.position.x;
+          const elY = el.position.y;
+          
+          return position.x >= elX && position.x <= elX + elWidth &&
+                 position.y >= elY && position.y <= elY + elHeight;
+        });
+        
+        // 如果找到了目标元素且不是源元素，创建连接
+        if (targetElement && targetElement.id !== item.sourceId) {
+          onCreatePath(item.sourceId, targetElement.id);
+          return { connected: true };
+        }
+        return { connected: false };
+      }
       
       // 从工具箱拖到画布 - 创建新元素
       // 调整位置使元素中心对齐鼠标位置
@@ -68,7 +94,7 @@ function CanvasArea({
   // 处理元素点击
   const handleElementClick = (element, event) => {
     if (event.ctrlKey || event.metaKey) {
-      // Ctrl+点击：连接模式
+      // Ctrl+点击：连接模式（保留作为备用方式）
       if (!connectFrom) {
         setConnectFrom(element);
         setConnectMode(true);
@@ -82,6 +108,66 @@ function CanvasArea({
     } else {
       onSelectElement(element);
     }
+  };
+
+  // 连接点组件
+  const ConnectionHandle = ({ element, position }) => {
+    const [{ isDragging }, drag] = useDrag(() => ({
+      type: 'CONNECTION_HANDLE',
+      item: { 
+        sourceId: element.id, 
+        sourceElement: element,
+        handlePosition: position 
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }));
+
+    // 计算连接点位置
+    const getHandleStyle = () => {
+      const baseStyle = {
+        position: 'absolute',
+        width: 12,
+        height: 12,
+        borderRadius: '50%',
+        background: isDragging ? '#52c41a' : '#1890ff',
+        border: '2px solid #fff',
+        cursor: 'crosshair',
+        zIndex: 1001,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+      };
+
+      if (position === 'left') {
+        return { 
+          ...baseStyle, 
+          left: -4,
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+        };
+      } else if (position === 'right') {
+        return { 
+          ...baseStyle, 
+          right: -4,
+          top: '50%',
+          transform: 'translate(50%, -50%)',
+        };
+      }
+      return baseStyle;
+    };
+
+    return (
+      <div
+        ref={drag}
+        style={getHandleStyle()}
+        onMouseDown={(e) => {
+          e.stopPropagation(); // 阻止触发元素的点击事件
+        }}
+        onClick={(e) => {
+          e.stopPropagation(); // 阻止触发元素的点击事件
+        }}
+      />
+    );
   };
 
   // 可拖动的元素组件 - 工作站
@@ -162,6 +248,14 @@ function CanvasArea({
       >
         <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{ws.name}</div>
         <div style={{ fontSize: '10px', color: '#666' }}>{ws.type}</div>
+        
+        {/* 选中时显示连接点 */}
+        {isSelected && (
+          <>
+            <ConnectionHandle element={ws} position="left" />
+            <ConnectionHandle element={ws} position="right" />
+          </>
+        )}
       </div>
     );
   };
@@ -244,6 +338,14 @@ function CanvasArea({
       >
         <div style={{ fontWeight: 'bold' }}>{buf.name}</div>
         <div style={{ fontSize: '10px', color: '#666' }}>{buf.capacity}</div>
+        
+        {/* 选中时显示连接点 */}
+        {isSelected && (
+          <>
+            <ConnectionHandle element={buf} position="left" />
+            <ConnectionHandle element={buf} position="right" />
+          </>
+        )}
       </div>
     );
   };
@@ -331,7 +433,7 @@ function CanvasArea({
           color: '#999',
         }}>
           <p>从左侧工具箱拖拽组件到这里</p>
-          <p style={{ fontSize: '12px', marginTop: 8 }}>按住Ctrl点击两个元素创建连接</p>
+          <p style={{ fontSize: '12px', marginTop: 8 }}>选中元素后，拖拽连接点创建连接</p>
         </div>
       )}
 

@@ -80,7 +80,7 @@ function ElementToolbox() {
         <ul style={{ marginTop: 4, paddingLeft: 18, marginBottom: 0 }}>
           <li>拖拽组件到画布中</li>
           <li>点击元素查看/编辑属性</li>
-          <li>按住Ctrl点击两个元素创建连接</li>
+          <li>选中元素后，拖拽连接点创建连接</li>
         </ul>
       </div>
     </>
