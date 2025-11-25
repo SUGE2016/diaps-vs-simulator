@@ -83,8 +83,8 @@ export const DraggableElement = ({
       key={element.id}
       style={{
         position: 'absolute',
-        left: element.position?.x || (elementType === 'workstation' ? 100 : 100),
-        top: element.position?.y || (elementType === 'workstation' ? 100 : 200),
+        left: element.position?.x ?? 100,
+        top: element.position?.y ?? 100,
         width,
         height,
         background: isConnectSource ? '#52c41a' : isSelected ? '#1890ff' : (elementType === 'workstation' ? '#fff' : '#fafafa'),
