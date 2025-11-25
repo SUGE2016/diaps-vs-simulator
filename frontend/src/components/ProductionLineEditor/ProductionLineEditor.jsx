@@ -117,20 +117,35 @@ function ProductionLineEditor({ lineId }) {
 
   // 更新元素位置
   const handleUpdatePosition = async (id, type, newPosition) => {
+    // 先立即更新本地状态，确保UI立即响应
+    if (type === 'workstation') {
+      setWorkstations(prev => {
+        const updated = prev.map(ws => 
+          ws.id === id ? { ...ws, position: newPosition } : ws
+        );
+        workstationsRef.current = updated;
+        return updated;
+      });
+    } else if (type === 'buffer') {
+      setBuffers(prev => {
+        const updated = prev.map(buf => 
+          buf.id === id ? { ...buf, position: newPosition } : buf
+        );
+        buffersRef.current = updated;
+        return updated;
+      });
+    }
+    
+    // 然后异步更新到服务器
     try {
       if (type === 'workstation') {
         await workstationAPI.update(id, { position: newPosition });
-        setWorkstations(workstations.map(ws => 
-          ws.id === id ? { ...ws, position: newPosition } : ws
-        ));
       } else if (type === 'buffer') {
         await bufferAPI.update(id, { position: newPosition });
-        setBuffers(buffers.map(buf => 
-          buf.id === id ? { ...buf, position: newPosition } : buf
-        ));
       }
     } catch (error) {
       message.error('更新位置失败');
+      // 如果失败，可以回滚状态（可选）
     }
   };
 
@@ -201,24 +216,16 @@ function ProductionLineEditor({ lineId }) {
     }
   };
 
-  // 计算中间画布的span
-  const getCanvasSpan = () => {
-    let span = 24;
-    if (!leftCollapsed) span -= 6;
-    if (!rightCollapsed) span -= 6;
-    return span;
-  };
-
   return (
     <DndProvider backend={HTML5Backend}>
-      <Row gutter={12}>
+      <div style={{ display: 'flex', gap: '12px', width: '100%', minHeight: 0, overflow: 'hidden' }}>
         {/* 左侧：工具箱 */}
         {!leftCollapsed && (
-          <Col span={6}>
+          <div style={{ width: '280px', flexShrink: 0 }}>
             <Card 
               title="组件工具箱" 
               size="small"
-              bodyStyle={{ padding: '12px' }}
+              styles={{ body: { padding: '12px' } }}
               extra={
                 <Button
                   type="default"
@@ -232,12 +239,12 @@ function ProductionLineEditor({ lineId }) {
             >
               <ElementToolbox />
             </Card>
-          </Col>
+          </div>
         )}
 
         {/* 中间：画布 */}
-        <Col span={getCanvasSpan()}>
-          <div style={{ position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+          <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             {/* 左侧展开按钮 - 当左侧边栏收起时显示 */}
             {leftCollapsed && (
               <Button
@@ -284,7 +291,7 @@ function ProductionLineEditor({ lineId }) {
               title="产线布局" 
               size="small" 
               loading={loading} 
-              bodyStyle={{ padding: '12px' }}
+              styles={{ body: { padding: '12px', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'auto' } }}
             >
               <CanvasArea
                 workstations={workstations}
@@ -299,15 +306,15 @@ function ProductionLineEditor({ lineId }) {
               />
             </Card>
           </div>
-        </Col>
+        </div>
 
         {/* 右侧：属性面板 */}
         {!rightCollapsed && (
-          <Col span={6}>
+          <div style={{ width: '320px', flexShrink: 0 }}>
             <Card 
               title={selectedElement ? `${(selectedElement.elementType || selectedElement.type) === 'workstation' ? '工作站' : (selectedElement.elementType || selectedElement.type) === 'buffer' ? '缓冲区' : '运输路径'}属性` : '属性面板'}
               size="small"
-              bodyStyle={{ padding: '12px' }}
+              styles={{ body: { padding: '12px' } }}
               extra={
                 <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
                   {selectedElement && (
@@ -354,9 +361,9 @@ function ProductionLineEditor({ lineId }) {
                 <Empty description="请选择一个元素" />
               )}
             </Card>
-          </Col>
+          </div>
         )}
-      </Row>
+      </div>
     </DndProvider>
   );
 }
