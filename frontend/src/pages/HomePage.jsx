@@ -15,7 +15,7 @@ import {
   Space,
   Popconfirm
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, ToolOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, ToolOutlined, SettingOutlined } from '@ant-design/icons';
 import { productionLineAPI } from '../services/api';
 
 const { Header, Content } = Layout;
@@ -94,8 +94,11 @@ function HomePage() {
       <Header style={{ background: '#fff', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h2 style={{ margin: 0 }}>价值流模拟器 - 建模工具</h2>
         <Space>
+          <Link to="/config">
+            <Button icon={<SettingOutlined />}>配置管理</Button>
+          </Link>
           <Link to="/import-export">
-            <Button icon={<ToolOutlined />}>配置导入/导出</Button>
+            <Button icon={<ToolOutlined />}>导入/导出</Button>
           </Link>
         </Space>
       </Header>
@@ -103,7 +106,7 @@ function HomePage() {
       <Content style={{ padding: '12px' }}>
         <Card
           title="产线列表"
-          bodyStyle={{ padding: '12px' }}
+          styles={{ body: { padding: '12px' } }}
           extra={
             <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
               新建产线

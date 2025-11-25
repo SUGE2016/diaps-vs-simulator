@@ -2,6 +2,7 @@
  * 路径渲染工具函数
  */
 import { ELEMENT_SIZES, ARROW_OFFSET, LINE_CLICK_AREA_WIDTH } from './constants';
+import { LINE_STYLES, ARROW_MARKER } from '../shared/canvasUtils';
 
 /**
  * 计算路径的起点和终点坐标
@@ -77,9 +78,9 @@ export const renderPath = (path, workstations, buffers, onSelectElement) => {
         y1={fromY}
         x2={toX}
         y2={toY}
-        stroke="#1890ff"
-        strokeWidth="2"
-        markerEnd="url(#arrowhead)"
+        stroke={LINE_STYLES.COLOR}
+        strokeWidth={LINE_STYLES.WIDTH}
+        markerEnd={`url(#${ARROW_MARKER.id})`}
         style={{ cursor: 'pointer', pointerEvents: 'none' }}
       />
       {/* 不可见的宽点击区域 */}
@@ -89,7 +90,7 @@ export const renderPath = (path, workstations, buffers, onSelectElement) => {
         x2={toX}
         y2={toY}
         stroke="transparent"
-        strokeWidth={LINE_CLICK_AREA_WIDTH}
+        strokeWidth={LINE_STYLES.CLICK_AREA_WIDTH}
         style={{ cursor: 'pointer' }}
         onClick={() => onSelectElement({ ...path, elementType: 'path' })}
       />

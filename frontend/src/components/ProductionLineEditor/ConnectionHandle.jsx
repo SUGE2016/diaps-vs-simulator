@@ -3,6 +3,7 @@
  */
 import { useDrag } from 'react-dnd';
 import { CONNECTION_HANDLE_SIZE } from './constants';
+import { CONNECTION_HANDLE_STYLES } from '../shared/canvasUtils';
 
 export const ConnectionHandle = ({ element, position }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -20,11 +21,11 @@ export const ConnectionHandle = ({ element, position }) => {
   const getHandleStyle = () => {
     const baseStyle = {
       position: 'absolute',
-      width: CONNECTION_HANDLE_SIZE,
-      height: CONNECTION_HANDLE_SIZE,
+      width: CONNECTION_HANDLE_STYLES.SIZE,
+      height: CONNECTION_HANDLE_STYLES.SIZE,
       borderRadius: '50%',
-      background: isDragging ? '#52c41a' : '#1890ff',
-      border: '2px solid #fff',
+      background: isDragging ? CONNECTION_HANDLE_STYLES.COLOR_DRAGGING : CONNECTION_HANDLE_STYLES.COLOR,
+      border: CONNECTION_HANDLE_STYLES.BORDER,
       cursor: 'crosshair',
       zIndex: 1001,
       boxShadow: '0 2px 4px rgba(0,0,0,0.2)',

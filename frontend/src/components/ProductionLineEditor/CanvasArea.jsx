@@ -7,6 +7,7 @@ import { DraggableElement } from './DraggableElement';
 import { renderPath } from './pathUtils';
 import { ELEMENT_SIZES, CANVAS_CONFIG } from './constants';
 import { detectAlignmentAndSpacing } from './alignmentUtils';
+import { createArrowMarker } from '../shared/canvasUtils';
 
 function CanvasArea({
   workstations,
@@ -209,7 +210,7 @@ function CanvasArea({
         maxY = Math.max(maxY, el.position.y + height + CANVAS_CONFIG.PADDING);
       }
     });
-    
+
     return { width: maxX, height: maxY };
   };
 
@@ -242,22 +243,10 @@ function CanvasArea({
             left: 0,
           }}
         >
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="8"
-              markerHeight="6"
-              refX="7"
-              refY="3"
-              orient="auto"
-              markerUnits="strokeWidth"
-            >
-              <path d="M 0 0 L 7 3 L 0 6 z" fill="#1890ff" />
-            </marker>
-          </defs>
-          <g style={{ pointerEvents: 'auto' }}>
+        {createArrowMarker()}
+        <g style={{ pointerEvents: 'auto' }}>
             {transportPaths.map(path => renderPath(path, workstations, buffers, onSelectElement))}
-          </g>
+        </g>
           {/* 对齐参考线 */}
           {alignmentGuides.horizontal !== null && (
             <line
@@ -283,10 +272,10 @@ function CanvasArea({
               style={{ pointerEvents: 'none' }}
             />
           )}
-        </svg>
+      </svg>
 
-        {/* 工作站和缓冲区 */}
-        {workstations.map(ws => (
+      {/* 工作站和缓冲区 */}
+      {workstations.map(ws => (
           <DraggableElement
             key={ws.id}
             element={ws}
@@ -301,8 +290,8 @@ function CanvasArea({
             workstations={workstations}
             buffers={buffers}
           />
-        ))}
-        {buffers.map(buf => (
+      ))}
+      {buffers.map(buf => (
           <DraggableElement
             key={buf.id}
             element={buf}
@@ -317,39 +306,39 @@ function CanvasArea({
             workstations={workstations}
             buffers={buffers}
           />
-        ))}
+      ))}
 
-        {/* 提示信息 */}
-        {workstations.length === 0 && buffers.length === 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            textAlign: 'center',
-            color: '#999',
-          }}>
-            <p>从左侧工具箱拖拽组件到这里</p>
-            <p style={{ fontSize: '12px', marginTop: 8 }}>选中元素后，拖拽连接点创建连接</p>
-          </div>
-        )}
+      {/* 提示信息 */}
+      {workstations.length === 0 && buffers.length === 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          textAlign: 'center',
+          color: '#999',
+        }}>
+          <p>从左侧工具箱拖拽组件到这里</p>
+          <p style={{ fontSize: '12px', marginTop: 8 }}>选中元素后，拖拽连接点创建连接</p>
+        </div>
+      )}
 
-        {/* 连接模式提示 */}
-        {connectMode && (
-          <div style={{
-            position: 'absolute',
-            top: 10,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#52c41a',
-            color: '#fff',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            fontSize: '14px',
-          }}>
-            连接模式：点击目标元素创建路径
-          </div>
-        )}
+      {/* 连接模式提示 */}
+      {connectMode && (
+        <div style={{
+          position: 'absolute',
+          top: 10,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#52c41a',
+          color: '#fff',
+          padding: '8px 16px',
+          borderRadius: '4px',
+          fontSize: '14px',
+        }}>
+          连接模式：点击目标元素创建路径
+        </div>
+      )}
     </div>
   );
 }

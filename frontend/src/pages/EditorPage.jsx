@@ -23,7 +23,7 @@ function EditorPage() {
     },
     {
       key: 'routine',
-      label: 'Routine配置',
+      label: '工艺路线',
       children: <RoutineEditor lineId={lineId} />,
     },
   ];

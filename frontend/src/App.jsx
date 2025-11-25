@@ -7,6 +7,7 @@ import zhCN from 'antd/locale/zh_CN';
 import HomePage from './pages/HomePage';
 import EditorPage from './pages/EditorPage';
 import ImportExportPage from './pages/ImportExportPage';
+import ConfigPage from './pages/ConfigPage';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/editor/:lineId" element={<EditorPage />} />
           <Route path="/import-export" element={<ImportExportPage />} />
+          <Route path="/config" element={<ConfigPage />} />
         </Routes>
       </BrowserRouter>
     </ConfigProvider>

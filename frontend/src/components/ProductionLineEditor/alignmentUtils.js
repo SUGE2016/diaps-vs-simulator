@@ -2,14 +2,23 @@
  * 对齐和间距检测工具函数
  */
 import { ELEMENT_SIZES, ALIGNMENT_CONFIG } from './constants';
+import { STEP_SIZE } from '../shared/canvasUtils';
+
+/**
+ * 获取元素尺寸
+ */
+export const getElementSize = (elementType) => {
+  if (elementType === 'workstation') return ELEMENT_SIZES.WORKSTATION;
+  if (elementType === 'buffer') return ELEMENT_SIZES.BUFFER;
+  if (elementType === 'step') return STEP_SIZE;
+  return ELEMENT_SIZES.WORKSTATION;
+};
 
 /**
  * 获取元素边界信息
  */
 export const getElementBounds = (element, elementType) => {
-  const { width, height } = elementType === 'workstation' 
-    ? ELEMENT_SIZES.WORKSTATION 
-    : ELEMENT_SIZES.BUFFER;
+  const { width, height } = getElementSize(elementType);
   
   return {
     x: element.position?.x || 0,
@@ -27,9 +36,7 @@ export const getElementBounds = (element, elementType) => {
  * 检测对齐和间距
  */
 export const detectAlignmentAndSpacing = (draggingId, draggingType, newX, newY, allElements) => {
-  const { width: draggingWidth, height: draggingHeight } = draggingType === 'workstation' 
-    ? ELEMENT_SIZES.WORKSTATION 
-    : ELEMENT_SIZES.BUFFER;
+  const { width: draggingWidth, height: draggingHeight } = getElementSize(draggingType);
   
   const draggingCenterX = newX + draggingWidth / 2;
   const draggingCenterY = newY + draggingHeight / 2;

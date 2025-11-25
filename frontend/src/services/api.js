@@ -68,9 +68,42 @@ export const routineAPI = {
   create: (data) => apiClient.post('/routines', data),
   update: (id, data) => apiClient.put(`/routines/${id}`, data),
   delete: (id) => apiClient.delete(`/routines/${id}`),
+  
+  // 步骤管理
+  createStep: (routineId, data) => apiClient.post(`/routines/${routineId}/steps`, data),
+  updateStep: (routineId, stepId, data) => apiClient.put(`/routines/${routineId}/steps/${stepId}`, data),
+  deleteStep: (routineId, stepId) => apiClient.delete(`/routines/${routineId}/steps/${stepId}`),
+  
+  // 步骤连接管理
+  createLink: (routineId, data) => apiClient.post(`/routines/${routineId}/links`, data),
+  deleteLink: (routineId, linkId) => apiClient.delete(`/routines/${routineId}/links/${linkId}`),
 };
 
-// ============= 配置管理API =============
+// ============= 工艺步骤类型API =============
+export const operationTypeAPI = {
+  list: () => apiClient.get('/config/operation-types'),
+  create: (data) => apiClient.post('/config/operation-types', data),
+  update: (id, data) => apiClient.put(`/config/operation-types/${id}`, data),
+  delete: (id) => apiClient.delete(`/config/operation-types/${id}`),
+};
+
+// ============= 工作站类型API =============
+export const workstationTypeAPI = {
+  list: () => apiClient.get('/config/workstation-types'),
+  create: (data) => apiClient.post('/config/workstation-types', data),
+  update: (id, data) => apiClient.put(`/config/workstation-types/${id}`, data),
+  delete: (id) => apiClient.delete(`/config/workstation-types/${id}`),
+};
+
+// ============= 物料类型API =============
+export const materialTypeAPI = {
+  list: () => apiClient.get('/config/material-types'),
+  create: (data) => apiClient.post('/config/material-types', data),
+  update: (id, data) => apiClient.put(`/config/material-types/${id}`, data),
+  delete: (id) => apiClient.delete(`/config/material-types/${id}`),
+};
+
+// ============= 配置导入导出API =============
 export const configAPI = {
   validate: (data) => apiClient.post('/config/validate', data),
   validateFile: (file) => {

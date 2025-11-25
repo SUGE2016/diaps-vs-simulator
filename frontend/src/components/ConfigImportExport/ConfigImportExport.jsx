@@ -133,7 +133,7 @@ function ConfigImportExport() {
   return (
     <div>
       {/* 导入配置 */}
-      <Card title="导入配置" bodyStyle={{ padding: '12px' }} style={{ marginBottom: 12 }}>
+      <Card title="导入配置" styles={{ body: { padding: '12px' } }} style={{ marginBottom: 12 }}>
         <Dragger
           beforeUpload={handleBeforeUpload}
           accept=".json,.yaml,.yml"
@@ -252,7 +252,7 @@ function ConfigImportExport() {
       </Card>
 
       {/* 导出配置 */}
-      <Card title="导出配置" bodyStyle={{ padding: '12px' }}>
+      <Card title="导出配置" styles={{ body: { padding: '12px' } }}>
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <div>
             <div style={{ marginBottom: 8 }}>选择产线：</div>

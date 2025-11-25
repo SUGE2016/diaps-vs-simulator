@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react';
 import { useDrag } from 'react-dnd';
 import { ConnectionHandle } from './ConnectionHandle';
 import { ELEMENT_SIZES } from './constants';
+import { ELEMENT_STYLES } from '../shared/canvasUtils';
 // import { detectAlignmentAndSpacing } from './alignmentUtils'; // 暂时禁用对齐功能
 
 export const DraggableElement = ({ 
@@ -87,10 +88,11 @@ export const DraggableElement = ({
         top: element.position?.y ?? 100,
         width,
         height,
-        background: isConnectSource ? '#52c41a' : isSelected ? '#1890ff' : (elementType === 'workstation' ? '#fff' : '#fafafa'),
-        border: `2px solid ${isConnectSource ? '#52c41a' : isSelected ? '#1890ff' : '#d9d9d9'}`,
+        background: isConnectSource ? ELEMENT_STYLES.CONNECT_SOURCE_BG : isSelected ? ELEMENT_STYLES.SELECTED_BG : (elementType === 'workstation' ? ELEMENT_STYLES.DEFAULT_BG : '#fafafa'),
+        borderWidth: `${ELEMENT_STYLES.BORDER_WIDTH}px`,
         borderStyle: elementType === 'buffer' ? 'dashed' : 'solid',
-        borderRadius: '4px',
+        borderColor: isConnectSource ? ELEMENT_STYLES.CONNECT_SOURCE_BORDER : isSelected ? ELEMENT_STYLES.SELECTED_BORDER : ELEMENT_STYLES.DEFAULT_BORDER,
+        borderRadius: ELEMENT_STYLES.BORDER_RADIUS,
         padding: '8px',
         cursor: 'move',
         display: 'flex',
@@ -99,6 +101,7 @@ export const DraggableElement = ({
         justifyContent: 'center',
         fontSize: elementType === 'workstation' ? '12px' : '11px',
         opacity: isDragging ? 0.5 : 1,
+        boxShadow: isSelected ? ELEMENT_STYLES.SHADOW_SELECTED : ELEMENT_STYLES.SHADOW_DEFAULT,
         zIndex: isDragging ? 1000 : isSelected ? 100 : 1,
       }}
       onClick={handleClick}

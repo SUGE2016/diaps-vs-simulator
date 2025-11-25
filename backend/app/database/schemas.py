@@ -82,13 +82,14 @@ class RoutineDB(Base):
     production_line_id = Column(String, ForeignKey("production_lines.id"), nullable=False)
     name = Column(String, nullable=False)
     material_type = Column(String, nullable=False)
-    start_location = Column(String, nullable=False)
-    end_location = Column(String, nullable=False)
+    start_location = Column(String, nullable=True)  # 改为可选，由图形化连线确定
+    end_location = Column(String, nullable=True)    # 改为可选，由图形化连线确定
     description = Column(Text, nullable=True)
 
     # 关系
     production_line = relationship("ProductionLineDB", back_populates="routines")
     steps = relationship("RoutineStepDB", back_populates="routine", cascade="all, delete-orphan")
+    step_links = relationship("RoutineStepLinkDB", back_populates="routine", cascade="all, delete-orphan")
 
 
 class RoutineStepDB(Base):
@@ -108,9 +109,23 @@ class RoutineStepDB(Base):
     branches = Column(Text, nullable=True)  # JSON格式存储
     merge_condition = Column(String, nullable=True)
     next_step = Column(String, nullable=True)
+    position = Column(Text, nullable=True)  # JSON格式存储 {x, y} 画布位置
 
     # 关系
     routine = relationship("RoutineDB", back_populates="steps")
+
+
+class RoutineStepLinkDB(Base):
+    """工艺步骤连接表 - 图形化流程中的连线"""
+    __tablename__ = "routine_step_links"
+
+    id = Column(String, primary_key=True, index=True)
+    routine_id = Column(String, ForeignKey("routines.id"), nullable=False)
+    from_step_id = Column(String, ForeignKey("routine_steps.id"), nullable=False)
+    to_step_id = Column(String, ForeignKey("routine_steps.id"), nullable=False)
+
+    # 关系
+    routine = relationship("RoutineDB", back_populates="step_links")
 
 
 class ValueStreamConfigDB(Base):
@@ -125,4 +140,31 @@ class ValueStreamConfigDB(Base):
 
     # 关系
     production_line = relationship("ProductionLineDB", back_populates="value_stream_configs")
+
+
+class OperationTypeDB(Base):
+    """工艺步骤类型表 - 全局配置"""
+    __tablename__ = "operation_types"
+
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text, nullable=True)
+
+
+class WorkstationTypeDB(Base):
+    """工作站类型表 - 全局配置"""
+    __tablename__ = "workstation_types"
+
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text, nullable=True)
+
+
+class MaterialTypeDB(Base):
+    """物料类型表 - 全局配置"""
+    __tablename__ = "material_types"
+
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text, nullable=True)
 
